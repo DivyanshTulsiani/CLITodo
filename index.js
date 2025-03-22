@@ -45,17 +45,26 @@ let currarray = [];
  program.command('addtodo')
     .description('Adds a todo in the todos file')
     .argument('<task_description>','file to put todos in')
-    .action(function(str){
+    .option('--due <add potential deadline>','add date of operation')
+    .option('--status <completed|incomplete>','Status of your Todo task')
+    .action(function(str,options){
       readtodos().then(function(data){
         currarray = data;
         let newtodo = {
-          task : str,
-          status : 'Incomplete',
-          id : currarray.length + 1
+          Task : str,
+          Status : 'Incomplete',
+          Id : currarray.length + 1,
+          Date : 'Not Fixed'
+        }
+        if(options.status){
+          newtodo.Status = options.status;
+        }
+        if(options.due){
+          newtodo.Date = options.due;
         }
         currarray.push(newtodo)
         writetodos(currarray).then(function(){
-          console.log(chalk.bold.green("Your Todo has Succesfully been UPDATED"));
+          console.log(chalk.bold.green("Your Todo has Succesfully been ADDED"));
         })
         .catch(function(err){
           console.log(chalk.red("Your todo was not Pushed due to ERRORS"));
@@ -67,5 +76,39 @@ let currarray = [];
     }
   )
 
+  program.command('getalltodos')
+  .description('Logs All Todo that the user has')
+  .action(function(){
+    readtodos().then(function(data){
+      currarray = data;
+      console.log(currarray);
+    });
+    console.log(chalk.bold.green('YOUR TODOS ARE AS FOLLOWS'))
+    console.log(currarray);
+  })
 
+
+  program.command('delete')
+.description('Deletes a specific Todo based on the ID given')
+.argument('<task_id>','enter the unique ID of the task You want to delete')
+.action(function(str){
+  
+})
+
+
+
+program.command('deleteall')
+.description('Deletes all todos at once')
+.action(function(){
+  readtodos().then(function(data){
+    currarray = [];
+    writetodos(currarray).then(function(){
+      console.log(chalk.red("Deleting All your Todo's....."))
+      console.log(chalk.yellow("Your Todo's have Succesfully been Deleted"))
+    })
+  })
+  .catch(function(){
+    console.log(chalk.red("An ERROR Ocurred while reading your file"))
+  })
+})
   program.parse();

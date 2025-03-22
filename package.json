@@ -14,3 +14,7 @@
     "commander": "^13.1.0"
   }
 }
+
+{
+  "type": "module"
+}

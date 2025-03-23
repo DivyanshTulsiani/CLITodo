@@ -87,12 +87,43 @@ let currarray = [];
     console.log(currarray);
   })
 
+function todoindexfinder(id,array){
+  for(let i =0;i<array.length;i++){
+    if(array[i].Id === id){
+      return i;
+    }
+  }
+  return -1;
+}
+
 
   program.command('delete')
 .description('Deletes a specific Todo based on the ID given')
 .argument('<task_id>','enter the unique ID of the task You want to delete')
 .action(function(str){
-  
+  let array = []
+  readtodos().then(function(data){
+
+      array = data;
+  })
+  let index =todoindexfinder(parseInt(str),array);
+  if(index === -1){
+    console.log(chalk.red('TODO NOT FOUND'));
+  }
+
+  readtodos().then(function(data){
+    currarray = data;
+    currarray.splice(index,1);
+    writetodos(currarray).then(function(){
+      console.log(chalk.bold.green("YOUR TODO HAS BEEN DELETED SUCCESSFULLY"));
+    })
+    .catch(function(){
+      console.log(chalk.bold.red('AN ERROR OCCURED WHILE WRITING TO FILE'))
+    })
+  })
+  .catch(function(){
+    console.log(chalk.bold.red('AN ERROR OCCURED WHILE READING FILE'))
+  })
 })
 
 
